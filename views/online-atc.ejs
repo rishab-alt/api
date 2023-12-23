@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online ATC</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+</head>
+
+<body>
+
+  <!-- views/online-atc.ejs -->
+  <div class="container mx-auto mt-8">
+    <h1 class="text-2xl font-bold mb-4">Online ATC</h1>
+    <div class="mb-4">
+      <input
+        type="text"
+        id="searchInput"
+        class="border p-2 rounded-md"
+        placeholder="Search by callsign..."
+        oninput="searchATC()"
+      />
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="atcContainer">
+      <% onlineAtcData.forEach((atc) => { %>
+        <div class="bg-white p-6 rounded-lg shadow-md cursor-pointer transition duration-300 hover:bg-gray-100" onclick="showDetails('<%= atc.callsign %>', '<%= atc.id %>', '<%= atc.start %>')">
+          <h2 class="text-lg font-semibold mb-2"><%= atc.callsign %></h2>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="detailsModal" class="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 hidden">
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-lg font-semibold mb-2" id="modalCallsign"></h2>
+      <p class="text-gray-600" id="modalID"></p>
+      <p class="text-gray-600" id="modalStart"></p>
+      <button class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+
+  <script>
+    function searchATC() {
+      const searchInput = document.getElementById('searchInput');
+      const searchTerm = searchInput.value.toLowerCase();
+      const atcContainer = document.getElementById('atcContainer');
+      const atcCards = atcContainer.getElementsByClassName('bg-white');
+
+      Array.from(atcCards).forEach((card) => {
+        const callsign = card.querySelector('.text-lg').innerText.toLowerCase();
+        if (callsign.includes(searchTerm)) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    function showDetails(callsign, id, start) {
+      const modalCallsign = document.getElementById('modalCallsign');
+      const modalID = document.getElementById('modalID');
+      const modalStart = document.getElementById('modalStart');
+
+      modalCallsign.innerText = callsign;
+      modalID.innerText = `CID: ${id}`;
+      modalStart.innerText = `Start time: ${start}`;
+
+      const detailsModal = document.getElementById('detailsModal');
+      detailsModal.style.display = 'block';
+    }
+
+    function closeModal() {
+      const detailsModal = document.getElementById('detailsModal');
+      detailsModal.style.display = 'none';
+    }
+  </script>
+
+</body>
+
+</html>
